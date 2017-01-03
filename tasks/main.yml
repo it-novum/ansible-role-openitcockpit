@@ -1,0 +1,17 @@
+- name: APT | openitcockpit repo key
+  apt_key: keyserver=keyserver.ubuntu.com id=A7D3EAFA
+
+- name: APT | openitcockpit repo
+  apt_repository: repo="deb https://apt.open-itcockpit.com trusty main" filename=openitcockpit
+
+- name: MySQL
+  include_role: name=mysql
+
+- name: Installation
+  apt: name={{ item }}
+  with_items:
+    - openitcockpit-naemon
+    - openitcockpit-statusengine-naemon
+    - openitcockpit-npcd
+    - openitcockpit-message
+
