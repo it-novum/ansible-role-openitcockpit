@@ -7,11 +7,73 @@
 - name: MySQL
   include_role: name=mysql
 
-- name: Installation
-  apt: name={{ item }}
+- name: Fact | create database
+  set_fact: "{{item.key}}={{item.value}}"
   with_items:
+    - key: "createdb_dbs"
+      value: "mysql"
+    - key: "createdb_config"
+      value: "/root/.openitcockpit.my.cnf"
+    - key: "createdb_user"
+      value: "openitcockpit"
+    - key: "createdb_host"
+      value: "localhost"
+    - key: "createdb_database"
+      value: "openitcockpit"
+
+- name: create database
+  include_role: name=createdb
+
+- name: Get mysql root password
+  mysql_password_ini: path=/root/.my.cnf user=root generate_password=False
+  register: mysql_root_data
+
+- name: Set debconf
+  debconf: name=openitcockpit-mysql question={{item.question}} value={{item.value}} vtype={{item.vtype}}
+  with_items:
+    - question: openitcockpit/mysql/app-pass
+      value: "{{createdb_password}}"
+      vtype: password
+    - question: openitcockpit/app-password-confirm
+      value: "{{createdb_password}}"
+      vtype: password
+    - question: openitcockpit/db/app-user
+      value: "{{createdb_user}}"
+      vtype: string
+    - question: openitcockpit/db/dbname
+      value: "{{createdb_database}}"
+      vtype: string
+    - question: openitcockpit/dbconfig-install
+      value: "true"
+      vtype: boolean
+    - question: openitcockpit/dbconfig-upgrade
+      value: "true"
+      vtype: boolean
+    - question: openitcockpit/upgrade-backup
+      value: "true"
+      vtype: boolean
+    - question: openitcockpit/mysql/admin-pass
+      value: "{{mysql_root_data.password}}"
+      vtype: password
+    - question: openitcockpit/password-confirm
+      value: "{{mysql_root_data.password}}"
+      vtype: password
+    - question: openitcockpit/mysql/admin-user
+      value: "{{mysql_root_data.user}}"
+      vtype: string
+    - question: openitcockpit/mysql/method
+      value: unix socket
+      vtype: select
+    - question: openitcockpit/database-type
+      value: "{{createdb_dbs}}"
+      vtype: string
+
+- name: Installation
+  apt:
+   name: "{{ item }}"
+  with_items:
+    - php5-mysql
     - openitcockpit-naemon
     - openitcockpit-statusengine-naemon
     - openitcockpit-npcd
     - openitcockpit-message
-
