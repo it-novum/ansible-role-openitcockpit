@@ -1,8 +1,16 @@
+- name: APT | remove old openitcockpit repo key
+  apt_key: keyserver=keyserver.ubuntu.com id=A7D3EAFA state=absent
+
 - name: APT | openitcockpit repo key
-  apt_key: keyserver=keyserver.ubuntu.com id=A7D3EAFA
+  apt_key: keyserver=keyserver.ubuntu.com id=1148DA8E
+
+- name: APT | remove old openitcockpit repo
+  apt_repository: repo="deb https://apt.open-itcockpit.com trusty main" filename=openitcockpit state=absent
 
 - name: APT | openitcockpit repo
-  apt_repository: repo="deb https://apt.open-itcockpit.com trusty main" filename=openitcockpit
+  apt_repository:
+    repo: "deb https://packages.openitcockpit.com/repositories/{{ ansible_distribution_release }} {{ ansible_distribution_release }} main"
+    filename: "openitcockpit"
 
 - name: MySQL
   include_role: name=mysql
@@ -72,7 +80,7 @@
   apt:
    name: "{{ item }}"
   with_items:
-    - php5-mysql
+    - openitcockpit-common
     - openitcockpit-naemon
     - openitcockpit-statusengine-naemon
     - openitcockpit-npcd
