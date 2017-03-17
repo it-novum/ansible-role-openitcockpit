@@ -1,16 +1,22 @@
-- name: APT | remove old openitcockpit repo key
-  apt_key: keyserver=keyserver.ubuntu.com id=A7D3EAFA state=absent
+- name: check for openitcockpit-release
+  stat: path=/var/lib/dpkg/info/openitcockpit-release.postinst
+  register: stat_oitc_release
 
-- name: APT | openitcockpit repo key
-  apt_key: keyserver=keyserver.ubuntu.com id=1148DA8E
+- block:
+  - name: APT | remove old openitcockpit repo key
+    apt_key: keyserver=keyserver.ubuntu.com id=A7D3EAFA state=absent
 
-- name: APT | remove old openitcockpit repo
-  apt_repository: repo="deb https://apt.open-itcockpit.com trusty main" filename=openitcockpit state=absent
+  - name: APT | openitcockpit repo key
+    apt_key: keyserver=keyserver.ubuntu.com id=1148DA8E
 
-- name: APT | openitcockpit repo
-  apt_repository:
-    repo: "deb https://packages.openitcockpit.com/repositories/{{ ansible_distribution_release }} {{ ansible_distribution_release }} main"
-    filename: "openitcockpit"
+  - name: APT | remove old openitcockpit repo
+    apt_repository: repo="deb https://apt.open-itcockpit.com trusty main" filename=openitcockpit state=absent
+
+  - name: APT | openitcockpit repo
+    apt_repository:
+      repo: "deb https://packages.openitcockpit.com/repositories/{{ ansible_distribution_release }} {{ ansible_distribution_release }} main"
+      filename: "openitcockpit"
+  when: not stat_oitc_release.stat.exists
 
 - name: MySQL
   include_role: name=mysql
