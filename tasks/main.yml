@@ -85,3 +85,4 @@
     - openitcockpit-statusengine-naemon
     - openitcockpit-npcd
     - openitcockpit-message
+    - openitcockpit-monitoring-plugins
