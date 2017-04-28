@@ -1,0 +1,30 @@
+- name: Fact | Naemon Packages
+  set_fact:
+    oitc_package_list:
+      - openitcockpit-nagios-sat
+      - openitcockpit-statusengine-broker-sat-naemon
+      - openitcockpit-monitoring-plugins
+      - phpnsta-client
+  when: openitcockpit_core == 'naemon'
+
+- name: Fact | Nagios Packages
+  set_fact:
+    oitc_package_list:
+      - openitcockpit-nagios-sat
+      - openitcockpit-statusengine-broker-sat-nagios
+      - openitcockpit-monitoring-plugins
+      - phpnsta-client
+  when: openitcockpit_core == 'nagios'
+
+- name: Installation
+  apt:
+    name: "{{ item }}"
+  with_items: "{{ oitc_package_list }}"
+
+
+- name: Create nagios ssh Folder
+  file:
+    path: /var/lib/nagios/.ssh
+    owner: nagios
+    group: nagios
+    mode: 0700
