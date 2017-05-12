@@ -89,6 +89,19 @@
     name: "{{ item }}"
   with_items: "{{ oitc_package_list }}"
 
+- name: Create .ssh directory
+  file:
+    path: /var/lib/nagios/.ssh
+    owner: nagios
+    group: nagios
+    mode: 755
+    state: directory
+
+- name: Generate SSH Key
+  user:
+    name: nagios
+    generate_ssh_key: yes
+
 - name: phpNSTA
   apt:
     name: "{{ item }}"
