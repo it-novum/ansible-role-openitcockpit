@@ -91,5 +91,8 @@
 
 - name: phpNSTA
   apt:
-    name: phpnsta-master
+    name: "{{ item }}"
+  with_items:
+    - phpnsta-master
+    - openitcockpit-module-distribute
   when: openitcockpit_instance == 'master'
