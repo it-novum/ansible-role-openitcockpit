@@ -109,3 +109,50 @@
     - phpnsta-master
     - openitcockpit-module-distribute
   when: openitcockpit_instance == 'master'
+
+- name: Install autoreport module
+  apt:
+    name: openitcockpit-module-autoreport
+  when: openitcockpit_module_autoreport
+
+- name: Install evc module
+  apt:
+    name: openitcockpit-module-evc
+  when: openitcockpit_module_evc
+
+- name: Install idoit module
+  apt:
+    name: openitcockpit-module-idoit
+  when: openitcockpit-module-idoit
+
+- name: Install map module
+  apt:
+    name: openitcockpit-module-map
+  when: openitcockpit_module_map
+
+- name: Install massenversand module
+  apt:
+    name: openitcockpit-module-massenversand-de
+  when: openitcockpit_module_massenversand
+
+- name: Install check_mk module
+  apt:
+    name: openitcockpit-module-mk
+  when: openitcockpit_module_mk
+
+- name: Install sap module
+  apt:
+    name: openitcockpit-module-sap
+  when: openitcockpit_module_sap
+
+- name: Install nrpe module
+  apt:
+    name: nagios-nrpe-plugin
+  when: openitcockpit_module_nrpe
+
+- name: Create symlink for nrpe module
+  file:
+    path: /opt/openitc/nagios/libexec/check_nrpe
+    state: link
+    src: /usr/lib/nagios/plugins/check_nrpe
+  when: openitcockpit_module_nrpe

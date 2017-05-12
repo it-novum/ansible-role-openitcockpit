@@ -1,3 +1,11 @@
 openitcockpit_license: 0dc0d951-e34e-43d0-a5a5-a690738e6a49
 openitcockpit_core: naemon
 openitcockpit_instance: standalone
+openitcockpit_module_autoreport: yes
+openitcockpit_module_evc: no
+openitcockpit_module_idoit: yes
+openitcockpit_module_map: yes
+openitcockpit_module_massenversand: yes
+openitcockpit_module_mk: no
+openitcockpit_module_sap: no
+openitcockpit_module_nrpe: yes
