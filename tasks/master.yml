@@ -150,6 +150,11 @@
     name: nagios-nrpe-plugin
   when: openitcockpit_module_nrpe
 
+- name: Install design module
+  apt:
+    name: openitcockpit-module-design
+  when: openitcockpit_module_design
+
 - name: Create symlink for nrpe module
   file:
     path: /opt/openitc/nagios/libexec/check_nrpe

@@ -13,6 +13,7 @@
 * openitcockpit_module_mk: (default=no)
 * openitcockpit_module_sap: (default=no)
 * openitcockpit_module_nrpe: (default=yes)
+* openitcockpit_module_design: (default=no)
 
 #### Additional notes
 

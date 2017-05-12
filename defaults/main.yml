@@ -9,3 +9,4 @@ openitcockpit_module_massenversand: yes
 openitcockpit_module_mk: no
 openitcockpit_module_sap: no
 openitcockpit_module_nrpe: yes
+openitcockpit_module_design: no
