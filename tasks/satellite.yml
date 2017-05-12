@@ -28,3 +28,4 @@
     owner: nagios
     group: nagios
     mode: 0700
+    state: directory
