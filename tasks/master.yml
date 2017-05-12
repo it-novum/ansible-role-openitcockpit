@@ -123,7 +123,7 @@
 - name: Install idoit module
   apt:
     name: openitcockpit-module-idoit
-  when: openitcockpit-module-idoit
+  when: openitcockpit_module_idoit
 
 - name: Install map module
   apt:
