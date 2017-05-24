@@ -4,27 +4,8 @@
     static: no
   when: "postfix_relayhost is defined"
 
-- name: APT | remove old openitcockpit repo key
-  apt_key:
-    keyserver: keyserver.ubuntu.com
-    id: A7D3EAFA
-    state: absent
-
-- name: APT | openitcockpit repo key
-  apt_key:
-    keyserver: keyserver.ubuntu.com
-    id: 1148DA8E
-
-- name: APT | remove old openitcockpit repo
-  apt_repository:
-    repo: "deb https://apt.open-itcockpit.com trusty main"
-    filename: openitcockpit
-    state: absent
-
-- name: APT | openitcockpit repo
-  apt_repository:
-    repo: "deb https://secret:{{ openitcockpit_license }}@packages.openitcockpit.com/repositories/{{ ansible_distribution_release }} {{ ansible_distribution_release }} main"
-    filename: "openitcockpit"
+- include: repo.yml
+  static: no
 
 - include: master.yml
   static: no

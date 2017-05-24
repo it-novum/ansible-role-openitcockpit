@@ -89,6 +89,9 @@
     name: "{{ item }}"
   with_items: "{{ oitc_package_list }}"
 
+- include: repo.yml
+  static: no
+
 - name: Create .ssh directory
   file:
     path: /var/lib/nagios/.ssh
