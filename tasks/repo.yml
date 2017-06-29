@@ -1,13 +1,11 @@
 - name: APT | remove old openitcockpit repo key
   apt_key:
-    keyserver: keyserver.ubuntu.com
     id: A7D3EAFA
     state: absent
 
 - name: APT | openitcockpit repo key
   apt_key:
-    keyserver: keyserver.ubuntu.com
-    id: 1148DA8E
+    data: "{{openitcockpit_repository_key }}"
 
 - name: APT | remove old openitcockpit repo
   apt_repository:
