@@ -164,3 +164,28 @@
     state: link
     src: /usr/lib/nagios/plugins/check_nrpe
   when: openitcockpit_module_nrpe
+
+- name: Install alfresco module
+  apt:
+    name: openitcockpit-module-alfresco
+  when: openitcockpit_module_alfresco
+
+- name: Install linux basic monitoring module
+  apt:
+    name: openitcockpit-module-linux-basic-monitoring
+  when: openitcockpit_module_linux_basic_monitoring
+
+- name: Install nwc module
+  apt:
+    name: openitcockpit-module-nwc
+  when: openitcockpit_module_nwc
+
+- name: Install postgres module
+  apt:
+    name: openitcockpit-module-postgres
+  when: openitcockpit_module_postgres
+
+- name: Install wmi module
+  apt:
+    name: openitcockpit-module-wmi
+  when: openitcockpit_module_wmi

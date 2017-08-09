@@ -14,6 +14,11 @@
 * openitcockpit_module_sap: (default=no)
 * openitcockpit_module_nrpe: (default=yes)
 * openitcockpit_module_design: (default=no)
+* openitcockpit_module_alfresco: (default=no)
+* openitcockpit_module_linux_basic_monitoring: (default=no)
+* openitcockpit_module_nwc: (default=no)
+* openitcockpit_module_postgres: (default=no)
+* openitcockpit_module_wmi: (default=no)
 
 #### Additional notes
 

@@ -21,7 +21,6 @@
     name: "{{ item }}"
   with_items: "{{ oitc_package_list }}"
 
-
 - name: Create nagios ssh Folder
   file:
     path: /var/lib/nagios/.ssh
@@ -41,3 +40,20 @@
     state: link
     src: /usr/lib/nagios/plugins/check_nrpe
   when: openitcockpit_module_nrpe
+
+- name: Install nwc module
+  apt:
+    name: openitcockpit-nwc
+  when: openitcockpit_module_nwc
+
+- name: Install check_mk module
+  apt:
+    name: openitcockpit-checkmk-sat
+  when: openitcockpit_module_mk
+
+- name: oitc.cmd Symlink
+  file:
+    state: link
+    path: /opt/openitc/nagios/var/rw/oitc.cmd
+    src: /opt/openitc/nagios/var/rw/nagios.cmd
+  when: openitcockpit_module_mk

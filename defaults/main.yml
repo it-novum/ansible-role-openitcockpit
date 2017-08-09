@@ -10,6 +10,11 @@ openitcockpit_module_mk: no
 openitcockpit_module_sap: no
 openitcockpit_module_nrpe: yes
 openitcockpit_module_design: no
+openitcockpit_module_alfresco: no
+openitcockpit_module_linux_basic_monitoring: no
+openitcockpit_module_nwc: no
+openitcockpit_module_postgres: no
+openitcockpit_module_wmi: no
 openitcockpit_repository_key: |
   -----BEGIN PGP PUBLIC KEY BLOCK-----
   Version: GnuPG v1
