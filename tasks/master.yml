@@ -83,6 +83,8 @@
     - question: openitcockpit/database-type
       value: "{{createdb_dbs}}"
       vtype: string
+  register: debconf_state
+  changed_when: "debconf_state|changed and debconf_state['previous'][item.question] != '(password omitted)'"
 
 - name: Installation
   apt:
