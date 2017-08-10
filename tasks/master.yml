@@ -4,7 +4,6 @@
       - openitcockpit-common
       - openitcockpit-naemon
       - openitcockpit-statusengine-naemon
-      - openitcockpit-npcd
       - openitcockpit-message
       - openitcockpit-monitoring-plugins
   when: openitcockpit_core == 'naemon'
@@ -15,7 +14,6 @@
       - openitcockpit-common
       - openitcockpit-nagios
       - openitcockpit-ndoutils
-      - openitcockpit-npcd
       - openitcockpit-message
       - openitcockpit-monitoring-plugins
   when: openitcockpit_core == 'nagios'
