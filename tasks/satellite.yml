@@ -56,4 +56,5 @@
     state: link
     path: /opt/openitc/nagios/var/rw/oitc.cmd
     src: /opt/openitc/nagios/var/rw/nagios.cmd
+    force: yes
   when: openitcockpit_module_mk
