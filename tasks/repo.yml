@@ -18,7 +18,7 @@
 - name: APT | remove old repos
   replace:
     dest: /etc/apt/sources.list.d/openitcockpit.list
-    regexp: "(?!(^\\s*#)|({{ openitcockpit_repo|regex_escape() }}))"
+    regexp: "^(?!((^\s*#.*)|({{ openitcockpit_repo|regex_escape() }}))).*$"
 
 - name: APT | openitcockpit repo
   apt_repository:
