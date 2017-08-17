@@ -1,6 +1,6 @@
 - name: Fact | Repo protocol
   set_fact: openitcockpit_repo_protocol=http
-  when: openitcockpit_package_cache
+  when: openitcockpit_package_cache is defined
 
 - name: Fact | Repo
   set_fact:
