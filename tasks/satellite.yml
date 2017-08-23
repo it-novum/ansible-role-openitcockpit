@@ -26,7 +26,7 @@
     path: /var/lib/nagios/.ssh
     owner: nagios
     group: nagios
-    mode: 0700
+    mode: "0700"
     state: directory
 
 - name: Install nrpe module

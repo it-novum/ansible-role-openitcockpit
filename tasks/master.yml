@@ -97,7 +97,7 @@
     path: /var/lib/nagios/.ssh
     owner: nagios
     group: nagios
-    mode: 755
+    mode: "0755"
     state: directory
 
 - name: Generate SSH Key
