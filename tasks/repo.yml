@@ -21,7 +21,7 @@
   replace:
     dest: /etc/apt/sources.list.d/openitcockpit.list
     regexp: "^(?!((^\\s*#.*)|({{ openitcockpit_repo|regex_escape() }}))).*$"
-  when: openitcockpit_list_stat|exists
+  when: openitcockpit_list_stat.stat.exists
 
 - name: APT | remove empty lines in openitcockpit.list
   lineinfile:
