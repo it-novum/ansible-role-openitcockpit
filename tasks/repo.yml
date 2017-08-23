@@ -11,11 +11,17 @@
   apt_key:
     data: "{{openitcockpit_repository_key }}"
 
+- name: stat openitcockpit.list
+  stat:
+    path: /etc/apt/sources.list.d/openitcockpit.list
+  register: openitcockpit_list_stat
+
 # there are so many ways to add the openitcockpit repo... we try to keep the list file clean
 - name: APT | remove old repos
   replace:
     dest: /etc/apt/sources.list.d/openitcockpit.list
     regexp: "^(?!((^\\s*#.*)|({{ openitcockpit_repo|regex_escape() }}))).*$"
+  when: openitcockpit_list_stat|exists
 
 - name: APT | remove empty lines in openitcockpit.list
   lineinfile:
