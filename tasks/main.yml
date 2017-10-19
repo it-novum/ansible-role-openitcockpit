@@ -1,16 +1,12 @@
 - block:
   - name: Postfix
     include_role: name=postfix-smarthost
-    static: no
   when: "postfix_relayhost is defined"
 
-- include: repo.yml
-  static: no
+- include_tasks: repo.yml
 
-- include: master.yml
-  static: no
+- include_tasks: master.yml
   when: openitcockpit_instance == 'standalone' or openitcockpit_instance == 'master'
 
-- include:  satellite.yml
-  static: no
+- include_tasks:  satellite.yml
   when: openitcockpit_instance == 'satellite'

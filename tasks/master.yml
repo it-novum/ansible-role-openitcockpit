@@ -89,8 +89,7 @@
     name: "{{ item }}"
   with_items: "{{ oitc_package_list }}"
 
-- include: repo.yml
-  static: no
+- include_tasks: repo.yml
 
 - name: Create .ssh directory
   file:
