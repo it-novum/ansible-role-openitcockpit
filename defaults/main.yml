@@ -15,6 +15,8 @@ openitcockpit_module_linux_basic_monitoring: no
 openitcockpit_module_nwc: no
 openitcockpit_module_postgres: no
 openitcockpit_module_wmi: no
+openitcockpit_module_grafana: no
+openitcockpit_module_pagerduty: no
 openitcockpit_repository_key: |
   -----BEGIN PGP PUBLIC KEY BLOCK-----
   Version: GnuPG v1
@@ -103,3 +105,4 @@ openitcockpit_repository_key: |
   =J3I+
   -----END PGP PUBLIC KEY BLOCK-----
 openitcockpit_repo_protocol: https
+openitcockpit_satellite_frontend: no

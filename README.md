@@ -19,6 +19,10 @@
 * openitcockpit_module_nwc: (default=no)
 * openitcockpit_module_postgres: (default=no)
 * openitcockpit_module_wmi: (default=no)
+* openitcockpit_module_grafana: (default=no)
+* openitcockpit_module_pagerduty: (default=no)
+* openitcockpit_satellite_frontend: Install satellite frontend (default=no)
+* openitcockpit_repo: overwrite repo settings (default=oitc default)
 
 #### Additional notes
 

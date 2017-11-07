@@ -1,3 +1,8 @@
+- name: Check settings
+  fail:
+    msg: "You must use nagios for satellite frontend"
+  when: openitcockpit_core == 'naemon' and openitcockpit_satellite_frontend
+
 - name: Fact | Naemon Packages
   set_fact:
     oitc_package_list:
@@ -14,7 +19,90 @@
       - openitcockpit-statusengine-broker-sat-nagios
       - openitcockpit-monitoring-plugins
       - phpnsta-client
-  when: openitcockpit_core == 'nagios'
+  when: openitcockpit_core == 'nagios' and not openitcockpit_satellite_frontend
+
+- block:
+  - name: Fact | Nagios Packages
+    set_fact:
+      oitc_package_list:
+        - openitcockpit-nagios-sat
+        - openitcockpit-statusengine3-broker-sat-nagios
+        - openitcockpit-statusengine3-oitc-mysql
+        - openitcockpit-statusengine3-worker
+        - openitcockpit-satellite-frontend
+        - openitcockpit-checkmk-sat
+
+  - name: Remove statusengine2
+    apt:
+      name: "openitcockpit-statusengine-broker-sat-nagios"
+      state: absent
+
+  - name: MySQL
+    include_role: name=mysql
+
+  - name: Fact | create database
+    set_fact: "{{item.key}}={{item.value}}"
+    with_items:
+      - key: "createdb_dbs"
+        value: "mysql"
+      - key: "createdb_config"
+        value: "/root/.openitcockpit_satgui.my.cnf"
+      - key: "createdb_user"
+        value: "openitcockpit"
+      - key: "createdb_host"
+        value: "localhost"
+      - key: "createdb_database"
+        value: "openitcockpit"
+
+  - name: create database
+    include_role: name=createdb
+
+  - name: Get mysql root password
+    mysql_password_ini: path=/root/.my.cnf user=root generate_password=False
+    register: mysql_root_data
+
+  - name: Set debconf
+    debconf: name=openitcockpit-statusengine3-oitc-mysql question={{item.question}} value={{item.value}} vtype={{item.vtype}}
+    with_items:
+      - question: openitcockpit/mysql/app-pass
+        value: "{{createdb_password}}"
+        vtype: password
+      - question: openitcockpit/app-password-confirm
+        value: "{{createdb_password}}"
+        vtype: password
+      - question: openitcockpit/db/app-user
+        value: "{{createdb_user}}"
+        vtype: string
+      - question: openitcockpit/db/dbname
+        value: "{{createdb_database}}"
+        vtype: string
+      - question: openitcockpit/dbconfig-install
+        value: "true"
+        vtype: boolean
+      - question: openitcockpit/dbconfig-upgrade
+        value: "true"
+        vtype: boolean
+      - question: openitcockpit/upgrade-backup
+        value: "true"
+        vtype: boolean
+      - question: openitcockpit/mysql/admin-pass
+        value: "{{mysql_root_data.password}}"
+        vtype: password
+      - question: openitcockpit/password-confirm
+        value: "{{mysql_root_data.password}}"
+        vtype: password
+      - question: openitcockpit/mysql/admin-user
+        value: "{{mysql_root_data.user}}"
+        vtype: string
+      - question: openitcockpit/mysql/method
+        value: unix socket
+        vtype: select
+      - question: openitcockpit/database-type
+        value: "{{createdb_dbs}}"
+        vtype: string
+    register: debconf_state
+    changed_when: "debconf_state|changed and debconf_state['previous'][item.question] != '(password omitted)'"
+  when: openitcockpit_satellite_frontend
 
 - name: Installation
   apt:
