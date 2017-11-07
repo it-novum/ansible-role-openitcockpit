@@ -188,3 +188,13 @@
   apt:
     name: openitcockpit-module-wmi
   when: openitcockpit_module_wmi
+
+- name: Install grafana
+  apt:
+    name: openitcockpit-module-grafana
+  when: openitcockpit_module_grafana
+
+- name: Install pagerduty
+  apt:
+    name: openitcockpit-module-pagerduty
+  when: openitcockpit_module_pagerduty
