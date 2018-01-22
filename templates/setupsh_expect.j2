@@ -1,0 +1,46 @@
+#!/usr/bin/expect
+
+set timeout 70
+
+spawn "/usr/share/openitcockpit/app/SETUP.sh"
+
+expect "> "
+send "y\n"
+
+expect "> "
+send "{{ openitcockpit_user_firstname }}\n"
+
+expect "> "
+send "{{ openitcockpit_user_surname }}\n"
+
+expect "> "
+send "{{ openitcockpit_user_email }}\n"
+
+expect "> "
+send "{{ openitcockpit_user_password }}\n"
+
+expect "> "
+send "{{ openitcockpit_user_password }}\n"
+
+expect "> "
+send "y\n"
+
+expect "> "
+send "{{ ansible_fqdn }}\n"
+
+expect "> "
+send "{{ openitcockpit_senderaddress }}\n"
+
+expect "> "
+send "{{ openitcockpit_smtp_host }}\n"
+
+expect "> "
+send "{{ openitcockpit_smtp_port }}\n"
+
+expect "> "
+send "{{ openitcockpit_smtp_user }}\n"
+
+expect "> "
+send "{{ openitcockpit_smtp_password }}\n"
+
+sleep 10

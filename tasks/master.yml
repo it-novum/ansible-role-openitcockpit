@@ -89,6 +89,14 @@
     name: "{{ item }}"
   with_items: "{{ oitc_package_list }}"
 
+- name: Install ansible dependencies
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - python-sqlalchemy
+    - python-mysqldb
+    - expect
+
 - include_tasks: repo.yml
 
 - name: Create .ssh directory
@@ -198,3 +206,37 @@
   apt:
     name: openitcockpit-module-pagerduty
   when: openitcockpit_module_pagerduty
+
+- name: check if user exists
+  sqledit:
+    state: select
+    url: mysql+mysqldb://localhost/openitcockpit?read_default_file=/etc/openitcockpit/mysql.cnf
+    table: users
+    keys:
+      - id
+    columns:
+      - name: id
+        type: Integer
+  register: user_result
+
+- block:
+    - name: Copy SETUP.sh expect script
+      template:
+        src: setupsh_expect.j2
+        dest: /usr/share/openitcockpit/app/SETUP_EXPECT
+        owner: root
+        mode: "0750"
+        group: root
+    - block:
+        - name: Run SETUP.sh script
+          command: /usr/share/openitcockpit/app/SETUP_EXPECT
+      always:
+        - name: Remove SETUP.sh expect script
+          file:
+            path: /usr/share/openitcockpit/app/SETUP_EXPECT
+            state: absent
+  when: user_result.rows|length == 0 and openitcockpit_user_password is defined
+
+- fail:
+    msg: Please set openitcockpit_user_password to run SETUP.sh through ansible or run SETUP.sh (now) manually
+  when: user_result.rows|length == 0 and (not openitcockpit_user_password is defined)
