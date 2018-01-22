@@ -24,6 +24,24 @@
 * openitcockpit_satellite_frontend: Install satellite frontend (default=no)
 * openitcockpit_repo: overwrite repo settings (default=oitc default)
 
+The following variables are only used on the first run:
+
+* openitcockpit_user_firstname: (default=itn)
+* openitcockpit_user_surname: (default=itn)
+* openitcockpit_user_email: (default=admin@it-novum.com)
+* openitockcpit_user_password: (required)
+* openitcockpit_senderaddress: (default=admin@it-novum.com)
+* openitcockpit_smtp_host: (default=127.0.0.1)
+* openitcockpit_smtp_port: (default=25)
+* openitcockpit_smtp_user: (default="")
+* openitcockpit_smtp_password: (default="")
+
+You should set openitockcpit_user_password on the first run like this:
+
+```bash
+ansible-playbook -i myinventory site.yml -e openitockcpit_user_password=mysecret
+```
+
 #### Additional notes
 
 You still have to run /usr/share/openitcockpit/app/SETUP.sh after the first run.
