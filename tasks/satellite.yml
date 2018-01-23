@@ -117,6 +117,16 @@
     mode: "0700"
     state: directory
 
+- name: Copy ssh pubkey
+  lineinfile:
+    dest: /var/lib/nagios/.ssh/id_rsa.pub
+    line: "{{ lookup('file', openitcockpit_ssh_pubkey) }}"
+    mode: "0644"
+    owner: "nagios"
+    group: "nagios"
+    create: yes
+  when: openitcockpit_ssh_pubkey is defined
+
 - name: Install nrpe module
   apt:
     name: nagios-nrpe-plugin

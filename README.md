@@ -1,6 +1,6 @@
 # Ansible Role - Install openitcockpit
 
-#### Variables
+## Variables
 
 * openitcockpit_license: The license key (default: 0dc0d951-e34e-43d0-a5a5-a690738e6a49)
 * openitcockpit_core: naemon or nagios (default: naemon)
@@ -23,6 +23,8 @@
 * openitcockpit_module_pagerduty: (default=no)
 * openitcockpit_satellite_frontend: Install satellite frontend (default=no)
 * openitcockpit_repo: overwrite repo settings (default=oitc default)
+* openitcockpit_ssh_key: Set ssh key for satellite connection of phpnsta
+* openitcockpit_ssh_pubkey: Set ssh pubkey for satellite connection of phpnsta
 
 The following variables are only used on the first run:
 
@@ -42,6 +44,15 @@ You should set openitockcpit_user_password on the first run like this:
 ansible-playbook -i myinventory site.yml -e openitockcpit_user_password=mysecret
 ```
 
-#### Additional notes
+## SSH keys for satellites
 
-You still have to run /usr/share/openitcockpit/app/SETUP.sh after the first run.
+You should create the ssh keys for satellite connections in the playbook directory:
+```bash
+ssh-keygen -t rsa -b 4096 -f oitc_id_rsa -N "" -C "oitc-master" -q
+```
+Then set the variables
+```yaml
+openitcockpit_ssh_key: oitc_id_rsa
+openitcockpit_ssh_pubkey: oitc_id_rsa.pub
+```
+If you have multiple environments you should specify them in your group_vars. You could also specify them in the Playbook.

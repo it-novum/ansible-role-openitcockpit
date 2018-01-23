@@ -107,10 +107,23 @@
     mode: "0755"
     state: directory
 
-- name: Generate SSH Key
-  user:
-    name: nagios
-    generate_ssh_key: yes
+- name: Copy ssh key
+  copy:
+    dest: /var/lib/nagios/.ssh/id_rsa
+    content: "{{ lookup('file', openitcockpit_ssh_key) }}"
+    mode: "0600"
+    owner: "nagios"
+    group: "nagios"
+  when: openitcockpit_ssh_key is defined
+
+- name: Copy ssh pubkey
+  copy:
+    dest: /var/lib/nagios/.ssh/id_rsa.pub
+    content: "{{ lookup('file', openitcockpit_ssh_pubkey) }}"
+    mode: "0600"
+    owner: "nagios"
+    group: "nagios"
+  when: openitcockpit_ssh_pubkey is defined
 
 - name: phpNSTA
   apt:
