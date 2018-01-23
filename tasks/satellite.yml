@@ -119,7 +119,7 @@
 
 - name: Copy ssh pubkey
   lineinfile:
-    dest: /var/lib/nagios/.ssh/id_rsa.pub
+    dest: /var/lib/nagios/.ssh/authorized_keys
     line: "{{ lookup('file', openitcockpit_ssh_pubkey) }}"
     mode: "0644"
     owner: "nagios"
