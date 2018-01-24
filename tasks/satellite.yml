@@ -31,6 +31,8 @@
         - openitcockpit-statusengine3-worker
         - openitcockpit-satellite-frontend
         - openitcockpit-checkmk-sat
+        - openitcockpit-monitoring-plugins
+        - phpnsta-client
         - python-sqlalchemy
         - python-mysqldb
 
