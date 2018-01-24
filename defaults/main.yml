@@ -114,3 +114,4 @@ openitcockpit_smtp_host: 127.0.0.1
 openitcockpit_smtp_port: 25
 openitcockpit_smtp_user: ""
 openitcockpit_smtp_password: ""
+openitcockpit_satellite_user_name: admin

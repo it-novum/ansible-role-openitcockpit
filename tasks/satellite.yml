@@ -31,6 +31,8 @@
         - openitcockpit-statusengine3-worker
         - openitcockpit-satellite-frontend
         - openitcockpit-checkmk-sat
+        - python-sqlalchemy
+        - python-mysqldb
 
   - name: Remove statusengine2
     apt:
@@ -156,3 +158,24 @@
     src: /opt/openitc/nagios/var/rw/nagios.cmd
     force: yes
   when: openitcockpit_module_mk
+
+- block:
+    - name: Check for default user
+      sqledit:
+        state: select
+        url: mysql+mysqldb://localhost/openitcockpit?read_default_file=/etc/openitcockpit/mysql.cnf
+        table: users
+        keys:
+          - id
+        columns:
+          - name: id
+            type: Integer
+      register: userlist
+    - name: check if openitcockpit_satellite_user_password is defined
+      fail:
+        msg: Please set openitcockpit_satellite_user_password to create the first sat gui user or create it now manually
+      when: userlist.rows|length == 0 and (not openitcockpit_satellite_user_password is defined)
+    - name: Create first user
+      command: "sudo -u www-data /usr/share/openitcockpit/bin/cake user --username '{{ openitcockpit_satellite_user_name }}' --password '{{ openitcockpit_satellite_user_password }}'"
+      when: userlist.rows|length == 0
+  when: openitcockpit_satellite_frontend

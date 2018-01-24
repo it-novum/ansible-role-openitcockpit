@@ -37,6 +37,8 @@ The following variables are only used on the first run:
 * openitcockpit_smtp_port: (default=25)
 * openitcockpit_smtp_user: (default="")
 * openitcockpit_smtp_password: (default="")
+* openitcockpit_satellite_user_name: default user for satellite gui (default=admin)
+* openitcockpit_satellite_user_password: (required)
 
 You should set openitockcpit_user_password on the first run like this:
 
