@@ -31,6 +31,8 @@
         - openitcockpit-statusengine3-worker
         - openitcockpit-satellite-frontend
         - openitcockpit-checkmk-sat
+        - python-sqlalchemy
+        - python-mysqldb
 
   - name: Remove statusengine2
     apt:
@@ -117,6 +119,16 @@
     mode: "0700"
     state: directory
 
+- name: Copy ssh pubkey
+  lineinfile:
+    dest: /var/lib/nagios/.ssh/authorized_keys
+    line: "{{ lookup('file', openitcockpit_ssh_pubkey) }}"
+    mode: "0644"
+    owner: "nagios"
+    group: "nagios"
+    create: yes
+  when: openitcockpit_ssh_pubkey is defined
+
 - name: Install nrpe module
   apt:
     name: nagios-nrpe-plugin
@@ -146,3 +158,20 @@
     src: /opt/openitc/nagios/var/rw/nagios.cmd
     force: yes
   when: openitcockpit_module_mk
+
+- block:
+    - name: Check for default user
+      sqledit:
+        state: select
+        url: mysql+mysqldb://localhost/openitcockpit?read_default_file=/etc/openitcockpit/mysql.cnf
+        table: users
+        keys:
+          - id
+        columns:
+          - name: id
+            type: Integer
+      register: userlist
+    - name: Create first user
+      command: "sudo -u www-data /usr/share/openitcockpit/bin/cake user --username '{{ openitcockpit_satellite_user_name }}' --password '{{ openitcockpit_satellite_user_password }}'"
+      when: userlist.rows|length == 0
+  when: openitcockpit_satellite_frontend and openitcockpit_satellite_user_password is defined

@@ -89,6 +89,14 @@
     name: "{{ item }}"
   with_items: "{{ oitc_package_list }}"
 
+- name: Install ansible dependencies
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - python-sqlalchemy
+    - python-mysqldb
+    - expect
+
 - include_tasks: repo.yml
 
 - name: Create .ssh directory
@@ -99,10 +107,23 @@
     mode: "0755"
     state: directory
 
-- name: Generate SSH Key
-  user:
-    name: nagios
-    generate_ssh_key: yes
+- name: Copy ssh key
+  copy:
+    dest: /var/lib/nagios/.ssh/id_rsa
+    content: "{{ lookup('file', openitcockpit_ssh_key) }}"
+    mode: "0600"
+    owner: "nagios"
+    group: "nagios"
+  when: openitcockpit_ssh_key is defined
+
+- name: Copy ssh pubkey
+  copy:
+    dest: /var/lib/nagios/.ssh/id_rsa.pub
+    content: "{{ lookup('file', openitcockpit_ssh_pubkey) }}"
+    mode: "0600"
+    owner: "nagios"
+    group: "nagios"
+  when: openitcockpit_ssh_pubkey is defined
 
 - name: phpNSTA
   apt:
@@ -198,3 +219,81 @@
   apt:
     name: openitcockpit-module-pagerduty
   when: openitcockpit_module_pagerduty
+
+- name: check if user exists
+  sqledit:
+    state: select
+    url: mysql+mysqldb://localhost/openitcockpit?read_default_file=/etc/openitcockpit/mysql.cnf
+    table: users
+    keys:
+      - id
+    columns:
+      - name: id
+        type: Integer
+  register: user_result
+
+- block:
+    - name: Copy SETUP.sh expect script
+      template:
+        src: setupsh_expect.j2
+        dest: /usr/share/openitcockpit/app/SETUP_EXPECT
+        owner: root
+        mode: "0750"
+        group: root
+    - block:
+        - name: Run SETUP.sh script
+          command: /usr/share/openitcockpit/app/SETUP_EXPECT
+      always:
+        - name: Remove SETUP.sh expect script
+          file:
+            path: /usr/share/openitcockpit/app/SETUP_EXPECT
+            state: absent
+  when: user_result.rows|length == 0 and openitcockpit_user_password is defined
+
+- fail:
+    msg: Please set openitcockpit_user_password to run SETUP.sh through ansible or run SETUP.sh (now) manually
+  when: user_result.rows|length == 0 and (not openitcockpit_user_password is defined)
+
+- name: Check license key
+  sqledit:
+    url: mysql+mysqldb://localhost/openitcockpit?read_default_file=/etc/openitcockpit/mysql.cnf
+    state: select
+    table: registers
+    keys:
+      - id
+    columns:
+      - name: id
+        type: Integer
+        value: 1
+      - name: license
+        type: String
+        value: "{{ openitcockpit_license }}"
+  register: current_license
+
+# I don't directly call this, because it would update the created/modified fields all the time
+- name: Set license key
+  sqledit:
+    url: mysql+mysqldb://localhost/openitcockpit?read_default_file=/etc/openitcockpit/mysql.cnf
+    table: registers
+    keys:
+      - id
+    columns:
+      - name: id
+        type: Integer
+        value: 1
+      - name: license
+        type: String
+        value: "{{ openitcockpit_license }}"
+      - name: accepted
+        type: Integer
+        value: 0
+      - name: apt
+        type: Integer
+        value: 1
+      - name: created
+        type: DateTime
+        value: "{{ '%Y-%m-%d %H:%M:%S' | strftime }}"
+      - name: modified
+        type: DateTime
+        value: "{{ '%Y-%m-%d %H:%M:%S' | strftime }}"
+  when: current_license.rows|length == 0

@@ -106,3 +106,12 @@ openitcockpit_repository_key: |
   -----END PGP PUBLIC KEY BLOCK-----
 openitcockpit_repo_protocol: https
 openitcockpit_satellite_frontend: no
+openitcockpit_user_firstname: itn
+openitcockpit_user_surname: itn
+openitcockpit_user_email: admin@it-novum.com
+openitcockpit_senderaddress: admin@it-novum.com
+openitcockpit_smtp_host: 127.0.0.1
+openitcockpit_smtp_port: 25
+openitcockpit_smtp_user: ""
+openitcockpit_smtp_password: ""
+openitcockpit_satellite_user_name: admin
