@@ -82,20 +82,20 @@
       value: "{{createdb_dbs}}"
       vtype: string
   register: debconf_state
-  changed_when: "debconf_state|changed and debconf_state['previous'][item.question] != '(password omitted)'"
+  changed_when: "debconf_state is changed and debconf_state['previous'][item.question] != '(password omitted)'"
 
 - name: Installation
   apt:
-    name: "{{ item }}"
-  with_items: "{{ oitc_package_list }}"
+    name: "{{ oitc_package_list }}"
 
 - name: Install ansible dependencies
   apt:
-    name: "{{ item }}"
-  with_items:
-    - python-sqlalchemy
-    - python-mysqldb
-    - expect
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - python-sqlalchemy
+      - python-mysqldb
+      - expect
 
 - include_tasks: repo.yml
 
@@ -127,8 +127,9 @@
 
 - name: phpNSTA
   apt:
-    name: "{{ item }}"
-  with_items:
+    name: "{{ packages }}"
+  vars:
+    packages:
     - phpnsta-master
     - openitcockpit-module-distribute
   when: openitcockpit_instance == 'master'

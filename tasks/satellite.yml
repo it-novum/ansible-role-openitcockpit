@@ -105,13 +105,12 @@
         value: "{{createdb_dbs}}"
         vtype: string
     register: debconf_state
-    changed_when: "debconf_state|changed and debconf_state['previous'][item.question] != '(password omitted)'"
+    changed_when: "debconf_state is changed and debconf_state['previous'][item.question] != '(password omitted)'"
   when: openitcockpit_satellite_frontend
 
 - name: Installation
   apt:
-    name: "{{ item }}"
-  with_items: "{{ oitc_package_list }}"
+    name: "{{ oitc_package_list }}"
 
 - name: Create nagios ssh Folder
   file:
