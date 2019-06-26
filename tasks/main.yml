@@ -1,6 +1,10 @@
-- block:
-  - name: Postfix
-    include_role: name=postfix-smarthost
+- name: systemtools
+  import_role:
+    name: systemtools
+
+- name: Postfix
+  include_role:
+    name: postfix-smarthost
   when: "postfix_relayhost is defined"
 
 - include_tasks: repo.yml
