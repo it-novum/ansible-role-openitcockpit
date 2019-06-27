@@ -146,89 +146,89 @@
 - name: Install autoreport module
   apt:
     name: openitcockpit-module-autoreport
-  when: openitcockpit_module_autoreport
+  when: openitcockpit_module_autoreport|bool
 
 - name: Install evc module
   apt:
     name: openitcockpit-module-evc
-  when: openitcockpit_module_evc
+  when: openitcockpit_module_evc|bool
 
 - name: Install idoit module
   apt:
     name: openitcockpit-module-idoit
-  when: openitcockpit_module_idoit
+  when: openitcockpit_module_idoit|bool
 
 - name: Install map module
   apt:
     name: openitcockpit-module-map
-  when: openitcockpit_module_map
+  when: openitcockpit_module_map|bool
 
 - name: Install massenversand module
   apt:
     name: openitcockpit-module-massenversand-de
-  when: openitcockpit_module_massenversand
+  when: openitcockpit_module_massenversand|bool
 
 - name: Install check_mk module
   apt:
     name: openitcockpit-module-mk
-  when: openitcockpit_module_mk
+  when: openitcockpit_module_mk|bool
 
 - name: Install sap module
   apt:
     name: openitcockpit-module-sap
-  when: openitcockpit_module_sap
+  when: openitcockpit_module_sap|bool
 
 - name: Install nrpe module
   apt:
     name: nagios-nrpe-plugin
-  when: openitcockpit_module_nrpe
+  when: openitcockpit_module_nrpe|bool
 
 - name: Install design module
   apt:
     name: openitcockpit-module-design
-  when: openitcockpit_module_design
+  when: openitcockpit_module_design|bool
 
 - name: Create symlink for nrpe module
   file:
     path: /opt/openitc/nagios/libexec/check_nrpe
     state: link
     src: /usr/lib/nagios/plugins/check_nrpe
-  when: openitcockpit_module_nrpe
+  when: openitcockpit_module_nrpe|bool
 
 - name: Install alfresco module
   apt:
     name: openitcockpit-module-alfresco
-  when: openitcockpit_module_alfresco
+  when: openitcockpit_module_alfresco|bool
 
 - name: Install linux basic monitoring module
   apt:
     name: openitcockpit-module-linux-basic-monitoring
-  when: openitcockpit_module_linux_basic_monitoring
+  when: openitcockpit_module_linux_basic_monitoring|bool
 
 - name: Install nwc module
   apt:
     name: openitcockpit-module-nwc
-  when: openitcockpit_module_nwc
+  when: openitcockpit_module_nwc|bool
 
 - name: Install postgres module
   apt:
     name: openitcockpit-module-postgres
-  when: openitcockpit_module_postgres
+  when: openitcockpit_module_postgres|bool
 
 - name: Install wmi module
   apt:
     name: openitcockpit-module-wmi
-  when: openitcockpit_module_wmi
+  when: openitcockpit_module_wmi|bool
 
 - name: Install grafana
   apt:
     name: openitcockpit-module-grafana
-  when: openitcockpit_module_grafana
+  when: openitcockpit_module_grafana|bool
 
 - name: Install pagerduty
   apt:
     name: openitcockpit-module-pagerduty
-  when: openitcockpit_module_pagerduty
+  when: openitcockpit_module_pagerduty|bool
 
 - name: check if user exists
   sqledit:
