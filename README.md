@@ -2,6 +2,7 @@
 
 ## Variables
 
+* install_mode: Choose between configure or install (default: "configure", affects only master)
 * openitcockpit_license: The license key (default: 0dc0d951-e34e-43d0-a5a5-a690738e6a49)
 * openitcockpit_core: naemon or nagios (default: naemon)
 * openitcockpit_instance: standalone, master or satellite (default=standalone)
@@ -58,3 +59,11 @@ openitcockpit_ssh_key: oitc_id_rsa
 openitcockpit_ssh_pubkey: oitc_id_rsa.pub
 ```
 If you have multiple environments you should specify them in your group_vars. You could also specify them in the Playbook.
+
+## install_mode
+
+### configure
+* Installs openITCOCKPIT without running setup.sh
+
+### install
+* Installs openITCOCKPIT with setup.sh (requires openitcockpit_user_password)
