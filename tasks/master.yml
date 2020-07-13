@@ -6,112 +6,106 @@
 - name: Fact | Naemon Packages
   set_fact:
     oitc_package_list:
-      - openitcockpit-common
-      - openitcockpit-naemon
-      - openitcockpit-statusengine-naemon
-      - openitcockpit-message
-      - openitcockpit-monitoring-plugins
+      - openitcockpit
+      - openitcockpit-module-grafana
   when: openitcockpit_core == 'naemon'
 
 - name: Fact | Nagios Packages
   set_fact:
     oitc_package_list:
-      - openitcockpit-common
+      - openitcockpit
       - openitcockpit-nagios
-      - openitcockpit-ndoutils
-      - openitcockpit-message
-      - openitcockpit-monitoring-plugins
+      - openitcockpit-module-grafana
   when: openitcockpit_core == 'nagios'
+
+- name: Install distribute module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-distribute'] }}"
+  when: openitcockpit_instance == 'master'
+
+- name: Install autoreport module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-autoreport'] }}"
+  when: openitcockpit_module_autoreport|bool
+
+- name: Install evc module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-evc'] }}"
+  when: openitcockpit_module_evc|bool
+
+- name: Install map module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-map'] }}"
+  when: openitcockpit_module_map|bool
+
+- name: Install check_mk module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-checkmk'] }}"
+  when: openitcockpit_module_mk|bool
+
+- name: Install sap module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-sap'] }}"
+  when: openitcockpit_module_sap|bool
+
+- name: Install nrpe module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['nagios-nrpe-plugin'] }}"
+  when: openitcockpit_module_nrpe|bool
+
+- name: Install design module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-design'] }}"
+  when: openitcockpit_module_design|bool
+
+
+- name: Install alfresco module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-alfresco'] }}"
+  when: openitcockpit_module_alfresco|bool
+
+- name: Install linux basic monitoring module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-linux-basic-monitoring'] }}"
+  when: openitcockpit_module_linux_basic_monitoring|bool
+
+- name: Install nwc module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-nwc'] }}"
+  when: openitcockpit_module_nwc|bool
+
+- name: Install postgres module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-postgres'] }}"
+  when: openitcockpit_module_postgres|bool
+
+- name: Install wmi module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-wmi'] }}"
+  when: openitcockpit_module_wmi|bool
+
+- name: Install pagerduty
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-module-pagerduty'] }}"
+  when: openitcockpit_module_pagerduty|bool
 
 - name: MySQL
   include_role:
     name: mysql
 
-- name: Fact | create database
-  set_fact: "{{item.key}}={{item.value}}"
-  with_items:
-    - key: "createdb_dbs"
-      value: "mysql"
-    - key: "createdb_config"
-      value: "/root/.openitcockpit.my.cnf"
-    - key: "createdb_user"
-      value: "openitcockpit"
-    - key: "createdb_host"
-      value: "localhost"
-    - key: "createdb_database"
-      value: "openitcockpit"
-
-- name: create database
-  include_role:
-    name: createdb
-
-- name: Get mysql root password
-  mysql_password_ini:
-    path: /root/.my.cnf
-    user: root
-    generate_password: False
-  register: mysql_root_data
-
-- name: Set debconf
-  debconf:
-    name: openitcockpit-mysql
-    question: "{{item.question}}"
-    value: "{{item.value}}"
-    vtype: "{{item.vtype}}"
-  with_items:
-    - question: openitcockpit/mysql/app-pass
-      value: "{{createdb_password}}"
-      vtype: password
-    - question: openitcockpit/app-password-confirm
-      value: "{{createdb_password}}"
-      vtype: password
-    - question: openitcockpit/db/app-user
-      value: "{{createdb_user}}"
-      vtype: string
-    - question: openitcockpit/db/dbname
-      value: "{{createdb_database}}"
-      vtype: string
-    - question: openitcockpit/dbconfig-install
-      value: "true"
-      vtype: boolean
-    - question: openitcockpit/dbconfig-upgrade
-      value: "true"
-      vtype: boolean
-    - question: openitcockpit/upgrade-backup
-      value: "true"
-      vtype: boolean
-    - question: openitcockpit/mysql/admin-pass
-      value: "{{mysql_root_data.password}}"
-      vtype: password
-    - question: openitcockpit/password-confirm
-      value: "{{mysql_root_data.password}}"
-      vtype: password
-    - question: openitcockpit/mysql/admin-user
-      value: "{{mysql_root_data.user}}"
-      vtype: string
-    - question: openitcockpit/mysql/method
-      value: unix socket
-      vtype: select
-    - question: openitcockpit/database-type
-      value: "{{createdb_dbs}}"
-      vtype: string
-  register: debconf_state
-  changed_when: "debconf_state is changed and debconf_state['previous'][item.question] != '(password omitted)'"
+- name: createdb
+  include_tasks: db.yml
 
 - name: Installation
   apt:
     name: "{{ oitc_package_list }}"
 
-- name: Install ansible dependencies
-  apt:
-    name: "{{ packages }}"
-  vars:
-    packages:
-      - python-sqlalchemy
-      - python-mysqldb
-      - expect
-
-- include_tasks: repo.yml
+- name: Create symlink for nrpe module
+  file:
+    path: /opt/openitc/nagios/libexec/check_nrpe
+    state: link
+    src: /usr/lib/nagios/plugins/check_nrpe
+  when: openitcockpit_module_nrpe|bool
 
 - name: Create .ssh directory
   file:
@@ -139,136 +133,45 @@
     group: "nagios"
   when: openitcockpit_ssh_pubkey is defined
 
-- name: phpNSTA
-  apt:
-    name: "{{ packages }}"
-  vars:
-    packages:
-    - phpnsta-master
-    - openitcockpit-module-distribute
-  when: openitcockpit_instance == 'master'
-
-- name: Install autoreport module
-  apt:
-    name: openitcockpit-module-autoreport
-  when: openitcockpit_module_autoreport|bool
-
-- name: Install evc module
-  apt:
-    name: openitcockpit-module-evc
-  when: openitcockpit_module_evc|bool
-
-- name: Install idoit module
-  apt:
-    name: openitcockpit-module-idoit
-  when: openitcockpit_module_idoit|bool
-
-- name: Install map module
-  apt:
-    name: openitcockpit-module-map
-  when: openitcockpit_module_map|bool
-
-- name: Install massenversand module
-  apt:
-    name: openitcockpit-module-massenversand-de
-  when: openitcockpit_module_massenversand|bool
-
-- name: Install check_mk module
-  apt:
-    name: openitcockpit-module-mk
-  when: openitcockpit_module_mk|bool
-
-- name: Install sap module
-  apt:
-    name: openitcockpit-module-sap
-  when: openitcockpit_module_sap|bool
-
-- name: Install nrpe module
-  apt:
-    name: nagios-nrpe-plugin
-  when: openitcockpit_module_nrpe|bool
-
-- name: Install design module
-  apt:
-    name: openitcockpit-module-design
-  when: openitcockpit_module_design|bool
-
-- name: Create symlink for nrpe module
-  file:
-    path: /opt/openitc/nagios/libexec/check_nrpe
-    state: link
-    src: /usr/lib/nagios/plugins/check_nrpe
-  when: openitcockpit_module_nrpe|bool
-
-- name: Install alfresco module
-  apt:
-    name: openitcockpit-module-alfresco
-  when: openitcockpit_module_alfresco|bool
-
-- name: Install linux basic monitoring module
-  apt:
-    name: openitcockpit-module-linux-basic-monitoring
-  when: openitcockpit_module_linux_basic_monitoring|bool
-
-- name: Install nwc module
-  apt:
-    name: openitcockpit-module-nwc
-  when: openitcockpit_module_nwc|bool
-
-- name: Install postgres module
-  apt:
-    name: openitcockpit-module-postgres
-  when: openitcockpit_module_postgres|bool
-
-- name: Install wmi module
-  apt:
-    name: openitcockpit-module-wmi
-  when: openitcockpit_module_wmi|bool
-
-- name: Install grafana
-  apt:
-    name: openitcockpit-module-grafana
-  when: openitcockpit_module_grafana|bool
-
-- name: Install pagerduty
-  apt:
-    name: openitcockpit-module-pagerduty
-  when: openitcockpit_module_pagerduty|bool
-
 - block:
   - name: check if user exists
     sqledit:
       state: select
-      url: mysql+mysqldb://localhost/openitcockpit?read_default_file=/etc/openitcockpit/mysql.cnf
+      url: "mysql://{{createdb_host}}/{{createdb_database}}?read_default_file=/opt/openitc/etc/mysql/mysql.cnf"
       table: users
       keys:
         - id
       columns:
         - name: id
           type: Integer
+    ignore_errors: yes
     register: user_result
 
   - block:
-      - name: Copy SETUP.sh expect script
+      - name: Create /opt/openitc/ansible/
+        file:
+          path: /opt/openitc/ansible/
+          state: directory
+      - name: Copy SETUP.sh configuration
         template:
-          src: setupsh_expect.j2
-          dest: /usr/share/openitcockpit/app/SETUP_EXPECT
+          src: ansible_settings.yml
+          dest: /opt/openitc/ansible/ansible_settings.yml
           owner: root
           mode: "0750"
           group: root
       - block:
           - name: Run SETUP.sh script
-            command: /usr/share/openitcockpit/app/SETUP_EXPECT
+            command: /opt/openitc/frontend/SETUP.sh
         always:
-          - name: Remove SETUP.sh expect script
+          - name: Remove SETUP.sh configuration
             file:
-              path: /usr/share/openitcockpit/app/SETUP_EXPECT
+              path: /opt/openitc/ansible/ansible_settings.yml
               state: absent
-    when: user_result.rows|length == 0
+    when: user_result.failed or user_result.rows|length == 0
 
   - name: Check license key
     sqledit:
-      url: mysql+mysqldb://localhost/openitcockpit?read_default_file=/etc/openitcockpit/mysql.cnf
+      url: "mysql://{{createdb_host}}/{{createdb_database}}?read_default_file=/opt/openitc/etc/mysql/mysql.cnf"
       state: select
       table: registers
       keys:
@@ -282,10 +185,9 @@
           value: "{{ openitcockpit_license }}"
     register: current_license
 
-  # I don't directly call this, because it would update the created/modified fields all the time
   - name: Set license key
     sqledit:
-      url: mysql+mysqldb://localhost/openitcockpit?read_default_file=/etc/openitcockpit/mysql.cnf
+      url: "mysql://{{createdb_host}}/{{createdb_database}}?read_default_file=/opt/openitc/etc/mysql/mysql.cnf"
       table: registers
       keys:
         - id
@@ -304,9 +206,9 @@
           value: 1
         - name: created
           type: DateTime
-          value: "{{ '%Y-%m-%d %H:%M:%S' | strftime }}"
+          value: "now"
         - name: modified
           type: DateTime
-          value: "{{ '%Y-%m-%d %H:%M:%S' | strftime }}"
+          value: "now"
     when: current_license.rows|length == 0
   when: install_mode == 'install'

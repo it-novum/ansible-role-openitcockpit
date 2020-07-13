@@ -1,114 +1,37 @@
-- name: Check settings
-  fail:
-    msg: "You must use nagios for satellite frontend"
-  when: openitcockpit_core == 'naemon' and openitcockpit_satellite_frontend
-
 - name: Fact | Naemon Packages
   set_fact:
     oitc_package_list:
-      - openitcockpit-nagios-sat
-      - openitcockpit-statusengine-broker-sat-naemon
-      - openitcockpit-monitoring-plugins
-      - phpnsta-client
+      - openitcockpit-satellite
   when: openitcockpit_core == 'naemon'
 
 - name: Fact | Nagios Packages
   set_fact:
     oitc_package_list:
-      - openitcockpit-nagios-sat
-      - openitcockpit-statusengine-broker-sat-nagios
-      - openitcockpit-monitoring-plugins
-      - phpnsta-client
-  when: openitcockpit_core == 'nagios' and not openitcockpit_satellite_frontend
+      - openitcockpit-satellite
+      - openitcockpit-nagios
+  when: openitcockpit_core == 'nagios'
 
-- block:
-  - name: Fact | Nagios Packages
-    set_fact:
-      oitc_package_list:
-        - openitcockpit-nagios-sat
-        - openitcockpit-statusengine3-broker-sat-nagios
-        - openitcockpit-statusengine3-oitc-mysql
-        - openitcockpit-statusengine3-worker
-        - openitcockpit-satellite-frontend
-        - openitcockpit-checkmk-sat
-        - openitcockpit-monitoring-plugins
-        - phpnsta-client
-        - python-sqlalchemy
-        - python-mysqldb
+- name: Install nrpe module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['nagios-nrpe-plugin'] }}"
+  when: openitcockpit_module_nrpe
 
-  - name: Remove statusengine2
-    apt:
-      name: "openitcockpit-statusengine-broker-sat-nagios"
-      state: absent
+- name: Install nwc module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-nwc'] }}"
+  when: openitcockpit_module_nwc
 
-  - name: MySQL
-    include_role:
-      name: mysql
+- name: Install check_mk module
+  set_fact:
+    oitc_package_list: "{{ oitc_package_list + ['openitcockpit-checkmk'] }}"
+  when: openitcockpit_module_mk
 
-  - name: Fact | create database
-    set_fact: "{{item.key}}={{item.value}}"
-    with_items:
-      - key: "createdb_dbs"
-        value: "mysql"
-      - key: "createdb_config"
-        value: "/root/.openitcockpit_satgui.my.cnf"
-      - key: "createdb_user"
-        value: "openitcockpit"
-      - key: "createdb_host"
-        value: "localhost"
-      - key: "createdb_database"
-        value: "openitcockpit"
+- name: MySQL
+  include_role:
+    name: mysql
 
-  - name: create database
-    include_role:
-      name: createdb
-
-  - name: Get mysql root password
-    mysql_password_ini: path=/root/.my.cnf user=root generate_password=False
-    register: mysql_root_data
-
-  - name: Set debconf
-    debconf: name=openitcockpit-statusengine3-oitc-mysql question={{item.question}} value={{item.value}} vtype={{item.vtype}}
-    with_items:
-      - question: openitcockpit/mysql/app-pass
-        value: "{{createdb_password}}"
-        vtype: password
-      - question: openitcockpit/app-password-confirm
-        value: "{{createdb_password}}"
-        vtype: password
-      - question: openitcockpit/db/app-user
-        value: "{{createdb_user}}"
-        vtype: string
-      - question: openitcockpit/db/dbname
-        value: "{{createdb_database}}"
-        vtype: string
-      - question: openitcockpit/dbconfig-install
-        value: "true"
-        vtype: boolean
-      - question: openitcockpit/dbconfig-upgrade
-        value: "true"
-        vtype: boolean
-      - question: openitcockpit/upgrade-backup
-        value: "true"
-        vtype: boolean
-      - question: openitcockpit/mysql/admin-pass
-        value: "{{mysql_root_data.password}}"
-        vtype: password
-      - question: openitcockpit/password-confirm
-        value: "{{mysql_root_data.password}}"
-        vtype: password
-      - question: openitcockpit/mysql/admin-user
-        value: "{{mysql_root_data.user}}"
-        vtype: string
-      - question: openitcockpit/mysql/method
-        value: unix socket
-        vtype: select
-      - question: openitcockpit/database-type
-        value: "{{createdb_dbs}}"
-        vtype: string
-    register: debconf_state
-    changed_when: "debconf_state is changed and debconf_state['previous'][item.question] != '(password omitted)'"
-  when: openitcockpit_satellite_frontend
+- name: createdb
+  include_tasks: db.yml
 
 - name: Installation
   apt:
@@ -132,49 +55,9 @@
     create: yes
   when: openitcockpit_ssh_pubkey is defined
 
-- name: Install nrpe module
-  apt:
-    name: nagios-nrpe-plugin
-  when: openitcockpit_module_nrpe
-
 - name: Create symlink for nrpe module
   file:
     path: /opt/openitc/nagios/libexec/check_nrpe
     state: link
     src: /usr/lib/nagios/plugins/check_nrpe
   when: openitcockpit_module_nrpe
-
-- name: Install nwc module
-  apt:
-    name: openitcockpit-nwc
-  when: openitcockpit_module_nwc
-
-- name: Install check_mk module
-  apt:
-    name: openitcockpit-checkmk-sat
-  when: openitcockpit_module_mk
-
-- name: oitc.cmd Symlink
-  file:
-    state: link
-    path: /opt/openitc/nagios/var/rw/oitc.cmd
-    src: /opt/openitc/nagios/var/rw/nagios.cmd
-    force: yes
-  when: openitcockpit_module_mk
-
-- block:
-    - name: Check for default user
-      sqledit:
-        state: select
-        url: mysql+mysqldb://localhost/openitcockpit?read_default_file=/etc/openitcockpit/mysql.cnf
-        table: users
-        keys:
-          - id
-        columns:
-          - name: id
-            type: Integer
-      register: userlist
-    - name: Create first user
-      command: "sudo -u www-data /usr/share/openitcockpit/bin/cake user --username '{{ openitcockpit_satellite_user_name }}' --password '{{ openitcockpit_satellite_user_password }}'"
-      when: userlist.rows|length == 0
-  when: openitcockpit_satellite_frontend and openitcockpit_satellite_user_password is defined

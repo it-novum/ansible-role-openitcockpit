@@ -1,0 +1,53 @@
+- name: Fact | create database
+  set_fact: "{{item.key}}={{item.value}}"
+  with_items:
+    - key: "createdb_dbs"
+      value: "mysql"
+    - key: "createdb_config"
+      value: "/opt/openitc/etc/mysql/mysql.cnf"
+    - key: "createdb_user"
+      value: "openitcockpit"
+    - key: "createdb_host"
+      value: "localhost"
+    - key: "createdb_database"
+      value: "openitcockpit"
+
+- name: create database
+  include_role:
+    name: createdb
+
+- name: Write mysql credentials
+  ini_file:
+    dest: /opt/openitc/etc/mysql/mysql.cnf
+    section: client
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    create: yes
+  with_items:
+    - option: host
+      value: "{{ createdb_host }}"
+    - option: user
+      value: "{{ createdb_user }}"
+    - option: password
+      value: "{{ createdb_password }}"
+    - option: database
+      value: "{{ createdb_database }}"
+    - option: port
+      value: "3306"
+
+- name: Write mysql credentials
+  ini_file:
+    dest: /opt/openitc/etc/mysql/dump.cnf
+    section: client
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    create: yes
+  with_items:
+    - option: host
+      value: "{{ createdb_host }}"
+    - option: user
+      value: "{{ createdb_user }}"
+    - option: password
+      value: "{{ createdb_password }}"
+    - option: port
+      value: "3306"

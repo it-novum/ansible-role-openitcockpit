@@ -1,0 +1,13 @@
+setup:
+  firstname: "{{ openitcockpit_user_firstname }}"
+  lastname: "{{ openitcockpit_user_surname }}"
+  email: "{{ openitcockpit_user_email }}"
+  password: "{{ openitcockpit_user_password }}"
+  timezone: Europe/Berlin
+  hostname: "{{ ansible_fqdn }}"
+  mail:
+    host: "{{ openitcockpit_smtp_host }}"
+    port: {{ openitcockpit_smtp_port }}
+    sender: "{{ openitcockpit_senderaddress }}"
+    username: {{ openitcockpit_smtp_user }}
+    password: {{ openitcockpit_smtp_password }}
