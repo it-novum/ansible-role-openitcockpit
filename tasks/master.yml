@@ -8,6 +8,7 @@
     oitc_package_list:
       - openitcockpit
       - openitcockpit-module-grafana
+      - phpmyadmin
   when: openitcockpit_core == 'naemon'
 
 - name: Fact | Nagios Packages
@@ -16,6 +17,7 @@
       - openitcockpit
       - openitcockpit-nagios
       - openitcockpit-module-grafana
+      - phpmyadmin
   when: openitcockpit_core == 'nagios'
 
 - name: Install distribute module
@@ -148,25 +150,25 @@
     register: user_result
 
   - block:
-      - name: Create /opt/openitc/ansible/
-        file:
-          path: /opt/openitc/ansible/
-          state: directory
-      - name: Copy SETUP.sh configuration
-        template:
-          src: ansible_settings.yml
-          dest: /opt/openitc/ansible/ansible_settings.yml
-          owner: root
-          mode: "0750"
-          group: root
-      - block:
-          - name: Run SETUP.sh script
-            command: /opt/openitc/frontend/SETUP.sh
-        always:
-          - name: Remove SETUP.sh configuration
-            file:
-              path: /opt/openitc/ansible/ansible_settings.yml
-              state: absent
+    - name: Create /opt/openitc/ansible/
+      file:
+        path: /opt/openitc/ansible/
+        state: directory
+    - name: Copy SETUP.sh configuration
+      template:
+        src: ansible_settings.yml
+        dest: /opt/openitc/ansible/ansible_settings.yml
+        owner: root
+        mode: "0750"
+        group: root
+    - block:
+        - name: Run SETUP.sh script
+          command: /opt/openitc/frontend/SETUP.sh
+      always:
+        - name: Remove SETUP.sh configuration
+          file:
+            path: /opt/openitc/ansible/ansible_settings.yml
+            state: absent
     when: user_result.failed or user_result.rows|length == 0
 
   - name: Check license key

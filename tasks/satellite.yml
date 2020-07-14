@@ -33,6 +33,12 @@
 - name: createdb
   include_tasks: db.yml
 
+- name: Enable webinterface
+  copy:
+    content: ""
+    dest: /opt/openitc/etc/frontend/enable_web_interface
+  when: openitcockpit_satellite_frontend|bool
+
 - name: Installation
   apt:
     name: "{{ oitc_package_list }}"
