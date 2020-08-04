@@ -8,7 +8,6 @@
     oitc_package_list:
       - openitcockpit
       - openitcockpit-module-grafana
-      - phpmyadmin
   when: openitcockpit_core == 'naemon'
 
 - name: Fact | Nagios Packages
@@ -17,7 +16,6 @@
       - openitcockpit
       - openitcockpit-nagios
       - openitcockpit-module-grafana
-      - phpmyadmin
   when: openitcockpit_core == 'nagios'
 
 - name: Install distribute module
