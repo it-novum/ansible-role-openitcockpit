@@ -1,6 +1,6 @@
 - name: Fact | Repo
   set_fact:
-    openitcockpit_repo: "deb https://packages.openitcockpit.io/repositories/{{ ansible_distribution_release }}/stable {{ ansible_distribution_release }} main"
+    openitcockpit_repo: "deb https://packages.openitcockpit.io/openitcockpit/{{ ansible_distribution_release }}/stable {{ ansible_distribution_release }} main"
   when: not openitcockpit_repo is defined
 
 - name: APT | remove old openitcockpit repo key
