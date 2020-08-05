@@ -1,6 +1,6 @@
 - name: Fact | Repo
   set_fact:
-    openitcockpit_repo: "deb {{ openitcockpit_repo_protocol }}://secret:{{ openitcockpit_license }}@packages.openitcockpit.io/repositories/{{ ansible_distribution_release }}/stable {{ ansible_distribution_release }} main"
+    openitcockpit_repo: "deb packages.openitcockpit.io/repositories/{{ ansible_distribution_release }}/stable {{ ansible_distribution_release }} main"
   when: not openitcockpit_repo is defined
 
 - name: APT | remove old openitcockpit repo key
@@ -29,6 +29,16 @@
     path: /etc/apt/sources.list.d/openitcockpit.list
     state: absent
     regexp: "^$"
+
+- name: APT | ensure auth.conf.d
+  file:
+    path: /etc/apt/auth.conf.d/
+    state: directory
+
+- name: APT | Set license
+  lineinfile:
+    line: "machine packages.openitcockpit.io login secret password {{openitcockpit_license}}"
+    dest: /etc/apt/auth.conf.d/openitcockpit.conf
 
 - name: APT | openitcockpit repo
   apt_repository:
