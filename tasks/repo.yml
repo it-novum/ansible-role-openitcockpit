@@ -39,6 +39,10 @@
   lineinfile:
     line: "machine packages.openitcockpit.io login secret password {{openitcockpit_license}}"
     dest: /etc/apt/auth.conf.d/openitcockpit.conf
+    create: yes
+    mode: 0600
+    owner: root
+    group: root
 
 - name: APT | openitcockpit repo
   apt_repository:
